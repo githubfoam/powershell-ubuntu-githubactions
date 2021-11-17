@@ -41,7 +41,7 @@ jobs:
    
 
   ubuntu-latest-api-test-job:
-    name: "pwsh alpine docker  ubuntu latest"
+    name: "api test:alpine docker  ubuntu latest"
     runs-on: ubuntu-latest
     env:
       distribution: "alpine" #https://hub.docker.com/_/alpine
@@ -70,7 +70,7 @@ jobs:
         docker image ls
         docker image history ${name}:${version} 
         docker system df -v               
-        docker image inspect ${name}/${version}    
+        docker image inspect ${name}:${version}    
         docker run -d -p 5000:8082 ${name}:${version}
         # curl -v http://localhost:5000/api/people #curl: (52) Empty reply from server
         # http get http://localhost:5000/api/people

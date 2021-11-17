@@ -22,7 +22,7 @@ jobs:
           pwsh
           dir
           # Get-Host #Get-Host: command not found
-          Get-History
+          # Get-History Get-History: command not found
           Get-Process            
     - name: "powershell version - preinstalled"
       shell: pwsh
