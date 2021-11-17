@@ -1,0 +1,16 @@
+# https://hub.docker.com/_/alpine
+# https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.2
+FROM mcr.microsoft.com/powershell:7.0.3-alpine-3.10-20201027
+LABEL org.opencontainers.image.authors="githubfoam"
+
+WORKDIR /tmp
+
+SHELL ["pwsh", "-Command"]
+
+RUN Install-Module -Name Polaris -Force
+
+COPY dockerfiles/api.ps1 api.ps1
+
+CMD ["pwsh", "-File", "api.ps1"]
+
+

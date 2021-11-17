@@ -1,0 +1,15 @@
+# https://hub.docker.com/_/alpine
+# https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.2
+FROM alpine:3.14 AS installer-env
+LABEL org.opencontainers.image.authors="githubfoam"
+
+#Set MOFED directory, image and working directory
+ENV PS_VERSION 7.0.0
+ENV PS_PACKAGE powershell-${PS_VERSION}-linux-alpine-x64.tar.gz
+ENV PS_PACKAGE_URL https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/${PS_PACKAGE}
+
+WORKDIR /tmp
+
+RUN wget --output-document="/tmp/linux.tar.gz" $PS_PACKAGE_URL && ls -lai /tmp
+
+

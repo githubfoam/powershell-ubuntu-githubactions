@@ -1,0 +1,13 @@
+# https://hub.docker.com/_/alpine
+# https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.2
+FROM alpine:3.14 AS base
+LABEL org.opencontainers.image.authors="githubfoam"
+
+WORKDIR /tmp
+
+SHELL ["pwsh", "-Command"]
+
+RUN Get-Host || Get-Process 
+         
+
+

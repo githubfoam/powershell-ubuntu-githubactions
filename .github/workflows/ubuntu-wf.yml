@@ -1,0 +1,212 @@
+# https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux?view=powershell-7.2
+name: "ubuntu powershell CI workflow"
+
+
+on:
+  push:
+    branches: [ test ]
+  # pull_request:
+  #   branches: [ githubactions_powershell ]
+
+
+jobs:
+
+  ubuntu-latest-pwsh-scripts:
+    name: "pwsh scripts - ubuntu"  
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: "powershell version - preinstalled" 
+      run: | 
+          pwsh
+          dir
+          Get-Host
+          Get-History
+          Get-Process            
+    - name: "powershell version - preinstalled"
+      shell: pwsh
+      run: |
+          pwsh
+          dir
+          Get-Host
+          Get-History
+          Get-Process      
+    - name: "Install PowerShell using Snap" 
+      run: |
+          sudo apt-get install snap snapd -y
+          sudo snap install powershell --classic 
+          pwsh
+          dir
+          # Get-Host #Get-Host: command not found
+          Get-History
+          Get-Process
+          exit
+          ls
+          sudo snap remove powershell #uninstall the PowerShell
+    - name: "Install PowerShell from Ubuntu Repository" 
+      run: |
+          wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update -y
+          sudo apt-get install powershell -y
+          pwsh
+          dir
+          Get-Host
+          Get-History
+          Get-Process
+          exit
+          sudo apt-get remove powershell -y #uninstall the PowerShell  
+    - name: "Installing PowerShell via the .NET SDK" 
+      run: |
+          sudo apt-get update -y
+          sudo apt-get install dotnet-sdk-5.0 -y
+          # The dotnet tool command specifies a NuGet package which PowerShell is packaged as
+          # By specifying the --global option, dotnet installs the PowerShell package to ~\.dotnet\tools 
+          # and ensures the directory is in the system PATH
+          sudo dotnet tool install --global PowerShell 
+          pwsh
+          dir
+          Get-PSDrive | Format-Table -Auto
+          Get-Module -ListAvailable
+          Find-Module Pester /A
+          Get-InstalledModule
+          Get-InstalledModule -Name "Pester"
+          Get-Command -Module Pester #all commands inside of the Pester module
+          Get-Host
+          Get-History
+          Get-Process
+          exit
+    - name: "Running PowerShell Scripts From Bash" 
+      run: |
+          cat <<EOT | sudo tee /tmp/DrivesInformation.ps1
+          Get-PSDrive
+          EOT        
+          pwsh /tmp/DrivesInformation.ps1     
+#     - name: "Install PSScriptAnalyzer module"
+#       shell: pwsh
+#       run: |
+#             Set-PSRepository PSGallery -InstallationPolicy Trusted
+#             Install-Module PSScriptAnalyzer -ErrorAction Stop 
+#     - name: "Lint with PSScriptAnalyzer"
+#       shell: pwsh
+#       run: |
+#             Write-Host $(Join-Path -Path $(Get-Location) -ChildPath "\scripts\*.ps1")
+#             $workdir = $(Join-Path -Path $(Get-Location) -ChildPath "\scripts\*.ps1")
+#             Write-Host $workdir
+#             Invoke-ScriptAnalyzer -Path  $workdir -Recurse -Outvariable issues
+#             $errors   = $issues.Where({$_.Severity -eq 'Error'})
+#             $warnings = $issues.Where({$_.Severity -eq 'Warning'})
+#             if ($errors) {
+#                 Write-Error "There were $($errors.Count) errors and $($warnings.Count) warnings total." -ErrorAction Stop
+#             } else {
+#                 Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
+#             }                 
+#     # - name: "silent install sysinternals" 
+#       # run: .\scripts\Install_Sysinternals.ps1   
+#     # - name: "silent install firefox" 
+#     #   run: ./scripts/Install_FireFox.ps1
+#     #   shell: pwsh  
+#     - name: "PowerCLI - silent install" 
+#       run: .\scripts\Install_PowerCLI_Powershellgallery_Ubuntu.ps1
+#       shell: pwsh              
+#     - name: "test verbose" 
+#       run: .\scripts\Test_Verbose.ps1
+#       shell: pwsh    
+#     # - name: "windows version" 
+#     #   run: .\scripts\Windows_Version.ps1
+#     #   shell: pwsh  
+
+# # https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-powershell
+#   pester-test:
+#     name: "Test PowerShell ubuntu"
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: "Check out repository code"
+#       uses: actions/checkout@v2
+#     - name: "powershell version" 
+#       run: $PSVersionTable
+#     # - name: "Perform a Pester test from the command-line"
+#     #   shell: pwsh
+#     #   run: Test-Path resultsfile.log | Should -Be $true
+#     - name: "Perform a Pester test from the Tests.ps1 file"
+#       shell: pwsh
+#       run: |
+#         Invoke-Pester Unit.Tests.ps1 -Passthru
+
+# # https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-powershell#packaging-workflow-data-as-artifacts
+#   upload-pester-results:
+#     name: "Run Pester and upload results ubuntu" 
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: "powershell version" 
+#       run: $PSVersionTable
+#     - name: "Test with Pester"
+#       shell: pwsh
+#       run: Invoke-Pester Unit.Tests.ps1 -Passthru | Export-CliXml -Path Unit.Tests.xml
+#     - name: "Upload test results"
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: ubuntu-Unit-Tests
+#         path: Unit.Tests.xml
+#     if: ${{ always() }}
+
+#   install-dependencies:
+#     name: "Install dependencies ubuntu latest"
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: "powershell version" 
+#       run: $PSVersionTable
+#     - name: Install from PSGallery
+#       shell: pwsh
+#       run: |
+#         Set-PSRepository PSGallery -InstallationPolicy Trusted
+#         Install-Module SqlServer, PSScriptAnalyzer
+
+# # https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-powershell
+#   lint-with-PSScriptAnalyzer:
+#     name: "Install and run PSScriptAnalyzer ubuntu latest"
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: "powershell version" 
+#       run: $PSVersionTable
+#     - name: "Install PSScriptAnalyzer module"
+#       shell: pwsh
+#       run: |
+#             Set-PSRepository PSGallery -InstallationPolicy Trusted
+#             Install-Module PSScriptAnalyzer -ErrorAction Stop
+#     - name: "Lint with PSScriptAnalyzer"
+#       shell: pwsh
+#       run: |
+#             Invoke-ScriptAnalyzer -Path *.ps1 -Recurse -Outvariable issues
+#             $errors   = $issues.Where({$_.Severity -eq 'Error'})
+#             $warnings = $issues.Where({$_.Severity -eq 'Warning'})
+#             if ($errors) {
+#                 Write-Error "There were $($errors.Count) errors and $($warnings.Count) warnings total." -ErrorAction Stop
+#             } else {
+#                 Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
+#             }
+
+#   ubuntu-latest-PSScriptAnalyzer-build:
+#     name: "build from source - ubuntu"  
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v1
+#     - name: "powershell version" 
+#       run: $PSVersionTable
+#       # https://github.com/PowerShell/PSScriptAnalyzer#usage
+#     - name: "git clone PSScriptAnalyzer module"
+#       shell: pwsh
+#       run: |
+#             $PSVersionTable
+#             git clone https://github.com/PowerShell/PSScriptAnalyzer
+#             cd PSScriptAnalyzer
+#             .\build.ps1 -PSVersion 7
+#             .\build.ps1 -Documentation #Rebuild documentation since it gets built automatically only the first time
+#             Get-ScriptAnalyzerRule #confirm installation
+
+
