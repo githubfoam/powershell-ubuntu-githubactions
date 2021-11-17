@@ -15,7 +15,7 @@ jobs:
       distribution: "alpine" #https://hub.docker.com/_/alpine
       version: "latest"
       name: "alpine/base"
-      dockerfilename: "Dockerfile.alpine.powershell"
+      dockerfilename: "Dockerfile.alpine.pwsh"
     steps:
     - uses: actions/checkout@v2
     - name: "os fingerprinting"
