@@ -27,8 +27,8 @@ jobs:
         cat /etc/issue
         cat /etc/os-release
         sudo apt-get install -y neofetch && neofetch   
-    - name: "docker pull alpine"
-      run: sudo docker pull ${distribution}:${version}  && sudo docker image ls  
+    # - name: "docker pull alpine"
+    #   run: sudo docker pull ${distribution}:${version}  && sudo docker image ls  
     - name: "docker build alpine base"
       run: |
         # destroyed afterwards (use --rm )
@@ -38,20 +38,7 @@ jobs:
         docker image history ${name}/${version} 
         docker system df -v               
         docker image inspect ${name}/${version} 
-    - name: "docker build api "
-      run: |
-        # destroyed afterwards (use --rm )
-        # all subsequent Dockerfile commands generate new images and the cache is not used
-        # docker build -t polaris-api:latest .
-        docker build --no-cache --rm  -t polaris-api:latest . --file dockerfiles/Dockerfile.alpine.pwsh.api 
-        docker image ls
-        docker image history ${name}/${version} 
-        docker system df -v               
-        docker image inspect ${name}/${version}    
-        docker run -d -p 5000:8082 polaris-api:latest
-        # curl -v http://localhost:5000/api/people #curl: (52) Empty reply from server
-        # http get http://localhost:5000/api/people
-        # http get http://localhost:5000/api/people/2     
+   
 
   ubuntu-latest-api-test-job:
     name: "pwsh alpine docker  ubuntu latest"
@@ -84,7 +71,8 @@ jobs:
         docker image history ${name}/${version} 
         docker system df -v               
         docker image inspect ${name}/${version}    
-        docker run -d -p 5000:8082 polaris-api:latest
+        # docker run -d -p 5000:8082 polaris-api:latest
+        docker run -d -p 5000:8082 ${name}/${version}
         # curl -v http://localhost:5000/api/people #curl: (52) Empty reply from server
         # http get http://localhost:5000/api/people
         # http get http://localhost:5000/api/people/2   

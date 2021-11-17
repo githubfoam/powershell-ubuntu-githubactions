@@ -5,9 +5,9 @@ LABEL org.opencontainers.image.authors="githubfoam"
 
 WORKDIR /tmp
 
-SHELL ["pwsh", "-Command"]
+SHELL ["pwsh", "-Command","Get-Host || Get-Process"]
 
-RUN Get-Host || Get-Process 
+# RUN Get-Host || Get-Process 
          
 
 
