@@ -33,11 +33,11 @@ jobs:
       run: |
         # destroyed afterwards (use --rm )
         # all subsequent Dockerfile commands generate new images and the cache is not used
-        sudo docker build --no-cache --rm  -t ${name}/${version} . --file dockerfiles/${dockerfilename} 
+        sudo docker build --no-cache --rm  -t ${name}:${version} . --file dockerfiles/${dockerfilename} 
         docker image ls
-        docker image history ${name}/${version} 
+        docker image history ${name}:${version} 
         docker system df -v               
-        docker image inspect ${name}/${version} 
+        docker image inspect ${name}:${version} 
    
 
   ubuntu-latest-api-test-job:
@@ -66,13 +66,12 @@ jobs:
         # all subsequent Dockerfile commands generate new images and the cache is not used
         # docker build -t polaris-api:latest .
         # docker build --no-cache --rm  -t polaris-api:latest . --file dockerfiles/Dockerfile.alpine.pwsh.api 
-        docker build --no-cache --rm  -t ${name}/${version} . --file ${dockerfiledir}/${dockerfilename}
+        docker build --no-cache --rm  -t ${name}:${version} . --file ${dockerfiledir}/${dockerfilename}
         docker image ls
-        docker image history ${name}/${version} 
+        docker image history ${name}:${version} 
         docker system df -v               
         docker image inspect ${name}/${version}    
-        # docker run -d -p 5000:8082 polaris-api:latest
-        docker run -d -p 5000:8082 ${name}/${version}
+        docker run -d -p 5000:8082 ${name}:${version}
         # curl -v http://localhost:5000/api/people #curl: (52) Empty reply from server
         # http get http://localhost:5000/api/people
         # http get http://localhost:5000/api/people/2   
@@ -102,11 +101,11 @@ jobs:
       run: |
         # destroyed afterwards (use --rm )
         # all subsequent Dockerfile commands generate new images and the cache is not used
-        sudo docker build --no-cache --rm  -t ${name}/${version} . --file dockerfiles/${dockerfilename} 
+        sudo docker build --no-cache --rm  -t ${name}:${version} . --file dockerfiles/${dockerfilename} 
         docker image ls
-        docker image history ${name}/${version} 
+        docker image history ${name}:${version} 
         docker system df -v               
-        docker image inspect ${name}/${version}        
+        docker image inspect ${name}:${version}        
 
   # ubuntu-latest-job:
   #   name: "docker alpine ubuntu latest"
